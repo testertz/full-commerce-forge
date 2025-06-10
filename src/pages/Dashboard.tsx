@@ -1,14 +1,38 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
-import { ShoppingBag, Package, Users, DollarSign, TrendingUp, Clock } from 'lucide-react';
+import { ShoppingBag, Package, Users, DollarSign, TrendingUp, Clock, CreditCard, Heart, Settings, User } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
+  SidebarTrigger,
+  SidebarInset,
+} from '@/components/ui/sidebar';
 
 const Dashboard = () => {
   const { user } = useAuth();
   const { itemCount, total } = useCart();
+  const [activeSection, setActiveSection] = useState('overview');
+
+  const sidebarItems = [
+    { id: 'overview', title: 'Overview', icon: TrendingUp },
+    { id: 'orders', title: 'My Orders', icon: Package },
+    { id: 'payments', title: 'Payments', icon: CreditCard },
+    { id: 'wishlist', title: 'Wishlist', icon: Heart },
+    { id: 'profile', title: 'Profile', icon: User },
+    { id: 'settings', title: 'Settings', icon: Settings },
+  ];
 
   const stats = [
     {
@@ -75,172 +99,216 @@ const Dashboard = () => {
     { icon: DollarSign, label: 'Payment Methods', color: 'hover:border-orange-500' },
   ];
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-8">
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="mb-8"
-        >
-          <h1 className="text-3xl font-bold mb-2">Welcome back, {user?.name}!</h1>
-          <p className="text-gray-600">Here's what's happening with your account</p>
-        </motion.div>
-
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {stats.map((stat, index) => {
-            const Icon = stat.icon;
-            return (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                whileHover={{ scale: 1.02 }}
-              >
-                <Card>
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-gray-600 text-sm">{stat.title}</p>
-                        <p className="text-2xl font-bold">{stat.value}</p>
-                        <div className="flex items-center mt-1">
-                          <TrendingUp className="w-3 h-3 text-green-500 mr-1" />
-                          <span className="text-xs text-green-500">{stat.change}</span>
+  const renderContent = () => {
+    switch (activeSection) {
+      case 'overview':
+        return (
+          <div className="space-y-6">
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {stats.map((stat, index) => {
+                const Icon = stat.icon;
+                return (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: index * 0.1 }}
+                    whileHover={{ scale: 1.02 }}
+                  >
+                    <Card>
+                      <CardContent className="p-6">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-gray-600 text-sm">{stat.title}</p>
+                            <p className="text-2xl font-bold">{stat.value}</p>
+                            <div className="flex items-center mt-1">
+                              <TrendingUp className="w-3 h-3 text-green-500 mr-1" />
+                              <span className="text-xs text-green-500">{stat.change}</span>
+                            </div>
+                          </div>
+                          <div className={`${stat.color} p-3 rounded-lg`}>
+                            <Icon className="w-6 h-6 text-white" />
+                          </div>
                         </div>
-                      </div>
-                      <div className={`${stat.color} p-3 rounded-lg`}>
-                        <Icon className="w-6 h-6 text-white" />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            );
-          })}
-        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                );
+              })}
+            </div>
 
-        <div className="grid lg:grid-cols-2 gap-8">
-          {/* Recent Orders */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-          >
+            <div className="grid lg:grid-cols-2 gap-8">
+              {/* Recent Orders */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Clock className="w-5 h-5" />
+                    Recent Orders
+                  </CardTitle>
+                  <CardDescription>Your latest order activity</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {recentOrders.map((order, index) => (
+                      <motion.div
+                        key={order.id}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4, delay: index * 0.1 }}
+                        className="flex items-center justify-between p-4 border rounded-lg hover:shadow-md transition-shadow"
+                      >
+                        <div>
+                          <p className="font-medium">Order #{order.id}</p>
+                          <p className="text-sm text-gray-600">
+                            {order.items} items • TSh {order.total.toLocaleString()}
+                          </p>
+                          <p className="text-xs text-gray-500">{order.date}</p>
+                        </div>
+                        <span className={`px-3 py-1 ${order.statusColor} rounded-full text-sm font-medium`}>
+                          {order.status}
+                        </span>
+                      </motion.div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Quick Actions */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Quick Actions</CardTitle>
+                  <CardDescription>Frequently used features</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 gap-4">
+                    {quickActions.map((action, index) => {
+                      const Icon = action.icon;
+                      return (
+                        <motion.button
+                          key={index}
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ duration: 0.4, delay: index * 0.1 }}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          className={`p-4 border-2 border-dashed border-gray-300 rounded-lg transition-all duration-300 ${action.color}`}
+                        >
+                          <Icon className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+                          <p className="text-sm font-medium">{action.label}</p>
+                        </motion.button>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Activity Timeline */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Clock className="w-5 h-5" />
-                  Recent Orders
-                </CardTitle>
-                <CardDescription>Your latest order activity</CardDescription>
+                <CardTitle>Recent Activity</CardTitle>
+                <CardDescription>Your account activity timeline</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {recentOrders.map((order, index) => (
-                    <motion.div
-                      key={order.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.4, delay: index * 0.1 }}
-                      className="flex items-center justify-between p-4 border rounded-lg hover:shadow-md transition-shadow"
-                    >
-                      <div>
-                        <p className="font-medium">Order #{order.id}</p>
-                        <p className="text-sm text-gray-600">
-                          {order.items} items • TSh {order.total.toLocaleString()}
-                        </p>
-                        <p className="text-xs text-gray-500">{order.date}</p>
-                      </div>
-                      <span className={`px-3 py-1 ${order.statusColor} rounded-full text-sm font-medium`}>
-                        {order.status}
-                      </span>
-                    </motion.div>
-                  ))}
+                  <div className="flex items-start gap-4">
+                    <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                    <div>
+                      <p className="font-medium">Order #003 delivered successfully</p>
+                      <p className="text-sm text-gray-600">2 hours ago</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-4">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                    <div>
+                      <p className="font-medium">Added 3 items to cart</p>
+                      <p className="text-sm text-gray-600">5 hours ago</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-4">
+                    <div className="w-2 h-2 bg-orange-500 rounded-full mt-2"></div>
+                    <div>
+                      <p className="font-medium">Profile updated</p>
+                      <p className="text-sm text-gray-600">1 day ago</p>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
-          </motion.div>
-
-          {/* Quick Actions */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
-          >
-            <Card>
-              <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
-                <CardDescription>Frequently used features</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 gap-4">
-                  {quickActions.map((action, index) => {
-                    const Icon = action.icon;
-                    return (
-                      <motion.button
-                        key={index}
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.4, delay: index * 0.1 }}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className={`p-4 border-2 border-dashed border-gray-300 rounded-lg transition-all duration-300 ${action.color}`}
-                      >
-                        <Icon className="w-8 h-8 mx-auto mb-2 text-gray-400" />
-                        <p className="text-sm font-medium">{action.label}</p>
-                      </motion.button>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </div>
-
-        {/* Activity Timeline */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
-          className="mt-8"
-        >
+          </div>
+        );
+      
+      default:
+        return (
           <Card>
             <CardHeader>
-              <CardTitle>Recent Activity</CardTitle>
-              <CardDescription>Your account activity timeline</CardDescription>
+              <CardTitle className="capitalize">{activeSection}</CardTitle>
+              <CardDescription>Manage your {activeSection}</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-start gap-4">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
-                  <div>
-                    <p className="font-medium">Order #003 delivered successfully</p>
-                    <p className="text-sm text-gray-600">2 hours ago</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
-                  <div>
-                    <p className="font-medium">Added 3 items to cart</p>
-                    <p className="text-sm text-gray-600">5 hours ago</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="w-2 h-2 bg-orange-500 rounded-full mt-2"></div>
-                  <div>
-                    <p className="font-medium">Profile updated</p>
-                    <p className="text-sm text-gray-600">1 day ago</p>
-                  </div>
-                </div>
-              </div>
+              <p className="text-gray-500">Content for {activeSection} section coming soon...</p>
             </CardContent>
           </Card>
-        </motion.div>
+        );
+    }
+  };
+
+  return (
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full">
+        <Sidebar>
+          <SidebarHeader className="p-4">
+            <div>
+              <h2 className="text-lg font-semibold">My Dashboard</h2>
+              <p className="text-sm text-gray-600">Welcome back, {user?.name}!</p>
+            </div>
+          </SidebarHeader>
+          <SidebarContent>
+            <SidebarGroup>
+              <SidebarGroupLabel>Account</SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {sidebarItems.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <SidebarMenuItem key={item.id}>
+                        <SidebarMenuButton 
+                          onClick={() => setActiveSection(item.id)}
+                          isActive={activeSection === item.id}
+                        >
+                          <Icon className="w-4 h-4" />
+                          <span>{item.title}</span>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    );
+                  })}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          </SidebarContent>
+        </Sidebar>
+
+        <SidebarInset>
+          <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+            <SidebarTrigger className="-ml-1" />
+            <div className="ml-auto">
+              <h1 className="text-lg font-semibold capitalize">{activeSection}</h1>
+            </div>
+          </header>
+          <div className="flex flex-1 flex-col gap-4 p-4">
+            <motion.div
+              key={activeSection}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              {renderContent()}
+            </motion.div>
+          </div>
+        </SidebarInset>
       </div>
-    </div>
+    </SidebarProvider>
   );
 };
 
