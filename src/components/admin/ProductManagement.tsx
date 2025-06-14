@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -17,6 +16,8 @@ import {
 } from '@/components/ui/dialog';
 import { Product } from '@/types';
 import ProductForm from './ProductForm';
+import ProductCategoryStats from './ProductCategoryStats';
+import ProductCategoryFilter from './ProductCategoryFilter';
 
 interface ProductManagementProps {
   products: Product[];
@@ -40,6 +41,7 @@ const ProductManagement = ({ products, onAddProduct, onEditProduct, onDeleteProd
     location: '',
     sellerName: '',
   });
+  const [categoryFilter, setCategoryFilter] = useState<string>('');
 
   const handleAddProduct = () => {
     if (!formData.category) return;
@@ -112,10 +114,15 @@ const ProductManagement = ({ products, onAddProduct, onEditProduct, onDeleteProd
     });
   };
 
+  // Filter products by selected category.
+  const filteredProducts = categoryFilter
+    ? products.filter((p) => p.category === categoryFilter)
+    : products;
+
   return (
     <Card>
       <CardHeader>
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <CardTitle>Products Management</CardTitle>
             <CardDescription>Manage all products in your store</CardDescription>
@@ -137,7 +144,13 @@ const ProductManagement = ({ products, onAddProduct, onEditProduct, onDeleteProd
         </div>
       </CardHeader>
       <CardContent>
-        <div className="overflow-x-auto">
+        <div className="flex flex-col md:flex-row gap-4">
+          <ProductCategoryFilter value={categoryFilter} onChange={setCategoryFilter} />
+          <div className="flex-1">
+            <ProductCategoryStats />
+          </div>
+        </div>
+        <div className="overflow-x-auto mt-4">
           <Table>
             <TableHeader>
               <TableRow>
@@ -150,7 +163,7 @@ const ProductManagement = ({ products, onAddProduct, onEditProduct, onDeleteProd
               </TableRow>
             </TableHeader>
             <TableBody>
-              {products.map((product) => (
+              {filteredProducts.map((product) => (
                 <TableRow key={product.id}>
                   <TableCell className="font-medium">{product.name}</TableCell>
                   <TableCell className="capitalize">{product.category}</TableCell>
@@ -197,4 +210,3 @@ const ProductManagement = ({ products, onAddProduct, onEditProduct, onDeleteProd
 };
 
 export default ProductManagement;
-

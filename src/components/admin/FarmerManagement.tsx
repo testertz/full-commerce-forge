@@ -1,6 +1,5 @@
-
-import React, { useState } from 'react';
-import { Sprout, MapPin, Phone, Mail, Star } from 'lucide-react';
+import React from 'react';
+import { Users, UserPlus, Edit, Trash2, Sprout, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -13,76 +12,81 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import FarmerLeaderboard from './FarmerLeaderboard';
+import FarmLocationsSummary from './FarmLocationsSummary';
 
 interface Farmer {
   id: string;
   name: string;
   email: string;
-  phone: string;
   location: string;
-  farmSize: string;
-  specialization: string[];
+  joinDate: string;
+  lastActive: string;
+  products: number;
   rating: number;
-  productsCount: number;
-  status: 'verified' | 'pending' | 'rejected';
 }
 
 const FarmerManagement = () => {
-  const [farmers] = useState<Farmer[]>([
+  const [farmers] = React.useState<Farmer[]>([
     {
       id: 'farmer-1',
-      name: 'Mary Mkulima',
+      name: 'Mary Farm',
       email: 'mary@farm.com',
-      phone: '+255 123 456 789',
-      location: 'Arusha',
-      farmSize: '5 acres',
-      specialization: ['Vegetables', 'Fruits'],
-      rating: 4.8,
-      productsCount: 12,
-      status: 'verified'
+      location: 'Kilimanjaro',
+      joinDate: '2024-02-20',
+      lastActive: '2024-06-13',
+      products: 12,
+      rating: 4.5
     },
     {
       id: 'farmer-2',
       name: 'John Farmer',
-      email: 'john@farm.co.tz',
-      phone: '+255 987 654 321',
-      location: 'Mbeya',
-      farmSize: '10 acres',
-      specialization: ['Crops', 'Vegetables'],
-      rating: 4.5,
-      productsCount: 8,
-      status: 'verified'
+      email: 'john@farmer.net',
+      location: 'Arusha',
+      joinDate: '2024-03-01',
+      lastActive: '2024-06-10',
+      products: 8,
+      rating: 4.2
     },
     {
       id: 'farmer-3',
-      name: 'Peter Kilimo',
-      email: 'peter@kilimo.com',
-      phone: '+255 555 123 456',
-      location: 'Dodoma',
-      farmSize: '3 acres',
-      specialization: ['Fruits'],
-      rating: 4.2,
-      productsCount: 5,
-      status: 'pending'
+      name: 'Lucie Field',
+      email: 'lucie@field.org',
+      location: 'Mbeya',
+      joinDate: '2024-04-15',
+      lastActive: '2024-06-05',
+      products: 15,
+      rating: 4.8
     }
   ]);
 
-  const getStatusBadge = (status: string) => {
-    const variants = {
-      verified: 'outline',
-      pending: 'secondary',
-      rejected: 'destructive'
-    };
-    return <Badge variant={variants[status as keyof typeof variants] as any}>{status}</Badge>;
+  const getStatusBadge = (date: string) => {
+    const lastActive = new Date(date);
+    const now = new Date();
+    const diff = now.getTime() - lastActive.getTime();
+    const days = Math.ceil(diff / (1000 * 3600 * 24));
+
+    let status = 'active';
+    if (days > 30) status = 'inactive';
+
+    return (
+      <Badge variant={status === 'active' ? 'outline' : 'secondary'}>
+        {status}
+      </Badge>
+    );
   };
 
   return (
     <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <FarmerLeaderboard />
+        <FarmLocationsSummary />
+      </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Farmers</CardTitle>
-            <Sprout className="h-4 w-4 text-muted-foreground" />
+            <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{farmers.length}</div>
@@ -90,30 +94,38 @@ const FarmerManagement = () => {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Verified</CardTitle>
+            <CardTitle className="text-sm font-medium">Active Farmers</CardTitle>
             <Sprout className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{farmers.filter(f => f.status === 'verified').length}</div>
+            <div className="text-2xl font-bold">{farmers.filter(f => {
+              const lastActive = new Date(f.lastActive);
+              const now = new Date();
+              const diff = now.getTime() - lastActive.getTime();
+              const days = Math.ceil(diff / (1000 * 3600 * 24));
+              return days <= 30;
+            }).length}</div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending</CardTitle>
+            <CardTitle className="text-sm font-medium">Avg. Products</CardTitle>
             <Sprout className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{farmers.filter(f => f.status === 'pending').length}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Avg Rating</CardTitle>
-            <Star className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {(farmers.reduce((acc, f) => acc + f.rating, 0) / farmers.length).toFixed(1)}
+              {farmers.reduce((acc, farmer) => acc + farmer.products, 0) / farmers.length}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Avg. Rating</CardTitle>
+            <Sprout className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {farmers.reduce((acc, farmer) => acc + farmer.rating, 0) / farmers.length}
             </div>
           </CardContent>
         </Card>
@@ -121,8 +133,16 @@ const FarmerManagement = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle>Farmers Management</CardTitle>
-          <CardDescription>Manage all farmers in your platform</CardDescription>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+              <CardTitle>Farmers Management</CardTitle>
+              <CardDescription>Manage all farmers in your system</CardDescription>
+            </div>
+            <Button className="flex items-center gap-2">
+              <UserPlus className="w-4 h-4" />
+              Add Farmer
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
@@ -130,11 +150,12 @@ const FarmerManagement = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead>Farmer</TableHead>
-                  <TableHead className="hidden md:table-cell">Contact</TableHead>
-                  <TableHead className="hidden lg:table-cell">Farm Info</TableHead>
-                  <TableHead>Rating</TableHead>
+                  <TableHead>Location</TableHead>
                   <TableHead>Products</TableHead>
+                  <TableHead>Rating</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead className="hidden md:table-cell">Join Date</TableHead>
+                  <TableHead className="hidden lg:table-cell">Last Active</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -149,45 +170,32 @@ const FarmerManagement = () => {
                         </Avatar>
                         <div>
                           <div className="font-medium">{farmer.name}</div>
-                          <div className="text-sm text-muted-foreground flex items-center gap-1">
-                            <MapPin className="w-3 h-3" />
-                            {farmer.location}
-                          </div>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell">
-                      <div className="space-y-1">
-                        <div className="text-sm flex items-center gap-1">
-                          <Mail className="w-3 h-3" />
-                          {farmer.email}
-                        </div>
-                        <div className="text-sm flex items-center gap-1">
-                          <Phone className="w-3 h-3" />
-                          {farmer.phone}
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell className="hidden lg:table-cell">
-                      <div className="space-y-1">
-                        <div className="text-sm">{farmer.farmSize}</div>
-                        <div className="text-xs text-muted-foreground">
-                          {farmer.specialization.join(', ')}
+                          <div className="text-sm text-muted-foreground hidden sm:block">{farmer.email}</div>
                         </div>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center gap-1">
-                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                        {farmer.rating}
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-4 h-4" />
+                        {farmer.location}
                       </div>
                     </TableCell>
-                    <TableCell>{farmer.productsCount}</TableCell>
-                    <TableCell>{getStatusBadge(farmer.status)}</TableCell>
+                    <TableCell>{farmer.products}</TableCell>
+                    <TableCell>{farmer.rating}</TableCell>
+                    <TableCell>{getStatusBadge(farmer.lastActive)}</TableCell>
+                    <TableCell className="hidden md:table-cell">{farmer.joinDate}</TableCell>
+                    <TableCell className="hidden lg:table-cell">{farmer.lastActive}</TableCell>
                     <TableCell>
-                      <Button variant="outline" size="sm">
-                        View
-                      </Button>
+                      <div className="flex gap-2">
+                        <Button variant="outline" size="sm">
+                          <Edit className="w-4 h-4" />
+                          <span className="hidden sm:inline ml-1">Edit</span>
+                        </Button>
+                        <Button variant="destructive" size="sm">
+                          <Trash2 className="w-4 h-4" />
+                          <span className="hidden sm:inline ml-1">Delete</span>
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
