@@ -15,8 +15,6 @@ import FarmerManagement from '@/components/admin/FarmerManagement';
 import PaymentManagement from '@/components/admin/PaymentManagement';
 import ReportsManagement from '@/components/admin/ReportsManagement';
 import AdminSidebar from '@/components/admin/AdminSidebar';
-import DashboardNavbar from "@/components/dashboard/DashboardNavbar";
-import DashboardFooter from "@/components/dashboard/DashboardFooter";
 
 const AdminDashboard = () => {
   const [products, setProducts] = useState<Product[]>(mockProducts);
@@ -88,14 +86,12 @@ const AdminDashboard = () => {
   return (
     <SidebarProvider>
       <>
-        <DashboardNavbar sectionTitle={activeSection} />
         <div className="min-h-screen flex w-full flex-col">
           <div className="flex flex-1">
             <AdminSidebar 
               activeSection={activeSection} 
               onSectionChange={setActiveSection} 
             />
-
             <SidebarInset className="flex-1">
               <header className="sticky top-0 z-40 flex h-14 md:h-16 shrink-0 items-center gap-2 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4">
                 <SidebarTrigger className="-ml-1" />
@@ -120,7 +116,6 @@ const AdminDashboard = () => {
               </div>
             </SidebarInset>
           </div>
-          <DashboardFooter />
         </div>
       </>
     </SidebarProvider>
