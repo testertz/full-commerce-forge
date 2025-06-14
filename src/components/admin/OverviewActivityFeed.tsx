@@ -10,7 +10,10 @@ const events = [
   { id: 4, type: "payment", content: "Payment TXN-12347 completed", time: "1h ago" },
 ];
 
-const typeColors = {
+const typeColors: Record<
+  string,
+  "secondary" | "outline" | "default" | "destructive"
+> = {
   order: "secondary",
   product: "outline",
   user: "default",
@@ -27,7 +30,7 @@ export default function OverviewActivityFeed() {
         <ul className="space-y-2">
           {events.map(e => (
             <li key={e.id} className="flex items-center gap-2 text-sm">
-              <Badge variant={typeColors[e.type as keyof typeof typeColors]}>{e.type}</Badge>
+              <Badge variant={typeColors[e.type]}>{e.type}</Badge>
               <span>{e.content}</span>
               <span className="ml-auto text-muted-foreground text-xs">{e.time}</span>
             </li>

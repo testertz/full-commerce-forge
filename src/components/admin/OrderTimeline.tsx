@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Timeline } from "lucide-react";
+import { Clock } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 const orderEvents = [
@@ -15,7 +15,7 @@ export default function OrderTimeline() {
       <CardHeader>
         <CardTitle>
           <span className="flex items-center gap-2">
-            <Timeline className="w-4 h-4" /> Order Timeline
+            <Clock className="w-4 h-4" /> Order Timeline
           </span>
         </CardTitle>
       </CardHeader>
