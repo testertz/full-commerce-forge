@@ -3,43 +3,7 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  role: 'customer' | 'seller' | 'admin';
-  phone?: string;
-  address?: string;
-  avatar?: string;
-}
-
-export interface Product {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  category: 'crops' | 'vegetables' | 'fruits';
-  image: string;
-  sellerId: string;
-  sellerName: string;
-  stock: number;
-  unit: string;
-  location: string;
-}
-
-export interface CartItem {
-  id: string;
-  productId: string;
-  product: Product;
-  quantity: number;
-  price: number;
-}
-
-export interface Order {
-  id: string;
-  userId: string;
-  items: CartItem[];
-  total: number;
-  status: 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled';
-  createdAt: string;
-  shippingAddress: string;
-  paymentMethod: string;
+  role: 'admin' | 'customer' | 'farmer';
 }
 
 export interface AuthContextType {
@@ -48,6 +12,30 @@ export interface AuthContextType {
   register: (email: string, password: string, name: string) => Promise<void>;
   logout: () => void;
   loading: boolean;
+  isInitialized: boolean;
+  refreshSession: () => void;
+}
+
+export interface Product {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  image: string;
+  category: string;
+  stock: number;
+  unit: string;
+  sellerId: string;
+  sellerName: string;
+  location: string;
+}
+
+export interface CartItem {
+  id: string;
+  productId: string;
+  quantity: number;
+  price: number;
+  product: Product;
 }
 
 export interface CartContextType {
