@@ -88,7 +88,7 @@ const ProductManagement = ({ products, onAddProduct, onEditProduct, onDeleteProd
       name: product.name,
       description: product.description,
       price: product.price.toString(),
-      category: product.category,
+      category: product.category as 'crops' | 'vegetables' | 'fruits' | '',
       image: product.image,
       stock: product.stock.toString(),
       unit: product.unit,
@@ -197,3 +197,4 @@ const ProductManagement = ({ products, onAddProduct, onEditProduct, onDeleteProd
 };
 
 export default ProductManagement;
+
