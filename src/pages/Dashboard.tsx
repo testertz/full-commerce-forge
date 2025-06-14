@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
@@ -19,6 +18,8 @@ import {
   SidebarTrigger,
   SidebarInset,
 } from '@/components/ui/sidebar';
+import DashboardNavbar from "@/components/dashboard/DashboardNavbar";
+import DashboardFooter from "@/components/dashboard/DashboardFooter";
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -256,58 +257,63 @@ const Dashboard = () => {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full">
-        <Sidebar>
-          <SidebarHeader className="p-4">
-            <div>
-              <h2 className="text-lg font-semibold">My Dashboard</h2>
-              <p className="text-sm text-gray-600">Welcome back, {user?.name}!</p>
-            </div>
-          </SidebarHeader>
-          <SidebarContent>
-            <SidebarGroup>
-              <SidebarGroupLabel>Account</SidebarGroupLabel>
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  {sidebarItems.map((item) => {
-                    const Icon = item.icon;
-                    return (
-                      <SidebarMenuItem key={item.id}>
-                        <SidebarMenuButton 
-                          onClick={() => setActiveSection(item.id)}
-                          isActive={activeSection === item.id}
-                        >
-                          <Icon className="w-4 h-4" />
-                          <span>{item.title}</span>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                    );
-                  })}
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
-          </SidebarContent>
-        </Sidebar>
-
-        <SidebarInset>
-          <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-            <SidebarTrigger className="-ml-1" />
-            <div className="ml-auto">
-              <h1 className="text-lg font-semibold capitalize">{activeSection}</h1>
-            </div>
-          </header>
-          <div className="flex flex-1 flex-col gap-4 p-4">
-            <motion.div
-              key={activeSection}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              {renderContent()}
-            </motion.div>
+      <>
+        <DashboardNavbar sectionTitle={activeSection} />
+        <div className="min-h-screen flex w-full flex-col">
+          <div className="flex flex-1">
+            <Sidebar>
+              <SidebarHeader className="p-4">
+                <div>
+                  <h2 className="text-lg font-semibold">My Dashboard</h2>
+                  <p className="text-sm text-gray-600">Welcome back, {user?.name}!</p>
+                </div>
+              </SidebarHeader>
+              <SidebarContent>
+                <SidebarGroup>
+                  <SidebarGroupLabel>Account</SidebarGroupLabel>
+                  <SidebarGroupContent>
+                    <SidebarMenu>
+                      {sidebarItems.map((item) => {
+                        const Icon = item.icon;
+                        return (
+                          <SidebarMenuItem key={item.id}>
+                            <SidebarMenuButton 
+                              onClick={() => setActiveSection(item.id)}
+                              isActive={activeSection === item.id}
+                            >
+                              <Icon className="w-4 h-4" />
+                              <span>{item.title}</span>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                        );
+                      })}
+                    </SidebarMenu>
+                  </SidebarGroupContent>
+                </SidebarGroup>
+              </SidebarContent>
+            </Sidebar>
+            <SidebarInset>
+              <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+                <SidebarTrigger className="-ml-1" />
+                <div className="ml-auto">
+                  <h1 className="text-lg font-semibold capitalize">{activeSection}</h1>
+                </div>
+              </header>
+              <div className="flex flex-1 flex-col gap-4 p-4">
+                <motion.div
+                  key={activeSection}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {renderContent()}
+                </motion.div>
+              </div>
+            </SidebarInset>
           </div>
-        </SidebarInset>
-      </div>
+          <DashboardFooter />
+        </div>
+      </>
     </SidebarProvider>
   );
 };
