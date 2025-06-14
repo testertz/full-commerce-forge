@@ -10,7 +10,11 @@ import { mockProducts } from '@/data/mockData';
 import { Product } from '@/types';
 import StatsOverview from '@/components/admin/StatsOverview';
 import ProductManagement from '@/components/admin/ProductManagement';
-import ManagementSection from '@/components/admin/ManagementSection';
+import OrderManagement from '@/components/admin/OrderManagement';
+import UserManagement from '@/components/admin/UserManagement';
+import FarmerManagement from '@/components/admin/FarmerManagement';
+import PaymentManagement from '@/components/admin/PaymentManagement';
+import ReportsManagement from '@/components/admin/ReportsManagement';
 import AdminSidebar from '@/components/admin/AdminSidebar';
 
 const AdminDashboard = () => {
@@ -61,46 +65,51 @@ const AdminDashboard = () => {
         );
       
       case 'orders':
-        return <ManagementSection title="Orders" description="Manage all orders in your system" />;
+        return <OrderManagement />;
       
       case 'users':
-        return <ManagementSection title="Users" description="Manage all users in your system" />;
+        return <UserManagement />;
       
       case 'farmers':
-        return <ManagementSection title="Farmers" description="Manage all farmers in your system" />;
+        return <FarmerManagement />;
       
       case 'payments':
-        return <ManagementSection title="Payments" description="Manage all payments in your system" />;
+        return <PaymentManagement />;
       
       case 'reports':
-        return <ManagementSection title="Reports" description="View and generate reports" />;
+        return <ReportsManagement />;
       
       default:
-        return <ManagementSection title={activeSection} description={`Manage ${activeSection} in your system`} />;
+        return <StatsOverview productCount={products.length} />;
     }
   };
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full">
+      <div className="min-h-screen flex w-full bg-background">
         <AdminSidebar 
           activeSection={activeSection} 
           onSectionChange={setActiveSection} 
         />
 
-        <SidebarInset>
-          <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+        <SidebarInset className="flex-1">
+          <header className="sticky top-0 z-40 flex h-14 md:h-16 shrink-0 items-center gap-2 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4">
             <SidebarTrigger className="-ml-1" />
-            <div className="ml-auto">
-              <h1 className="text-lg font-semibold capitalize">{activeSection}</h1>
+            <div className="ml-auto flex items-center gap-4">
+              <h1 className="text-lg font-semibold capitalize hidden sm:block">{activeSection}</h1>
+              <h1 className="text-base font-semibold capitalize sm:hidden">
+                {activeSection.length > 8 ? activeSection.substring(0, 8) + '...' : activeSection}
+              </h1>
             </div>
           </header>
-          <div className="flex flex-1 flex-col gap-4 p-4">
+          
+          <div className="flex flex-1 flex-col gap-4 p-2 sm:p-4 lg:p-6 max-w-full overflow-hidden">
             <motion.div
               key={activeSection}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
+              className="w-full"
             >
               {renderContent()}
             </motion.div>
